@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../constants.dart';
 import '../widgets/cudtom_textformfield.dart';
 import '../widgets/custom_button.dart';
+import 'HomePage.dart';
 import 'LoginPage.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -14,6 +16,8 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  GlobalKey<FormState> formkey = GlobalKey();
+  String? email, password;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,72 +33,112 @@ class _RegisterPageState extends State<RegisterPage> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Container(
-                    width: 200,
-                    height: 200,
-                    child: Image.asset("assets/images/logo.png")),
-                const SizedBox(
-                  height: 30,
-                ),
-                const Text(
-                  "Scholar Chat",
-                  style: TextStyle(color: kPrimaryColor, fontSize: 30),
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                const SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    "Registration",
-                    style: TextStyle(fontSize: 30, color: kPrimaryColor),
+            child: Form(
+              key: formkey,
+              child: Column(
+                children: [
+                  Container(width: 200, height: 200, child: Image.asset(logo)),
+                  const SizedBox(
+                    height: 30,
                   ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                CustomTextFormField(hintText: "Email"),
-                const SizedBox(
-                  height: 15,
-                ),
-                CustomTextFormField(hintText: "Password"),
-                const SizedBox(
-                  height: 25,
-                ),
-                CustomButtom(
-                  ontap: () {},
-                  text: "Sign up",
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "oleady have an account ",
-                      style: TextStyle(
-                          color: kSecondColor, fontWeight: FontWeight.bold),
+                  const Text(
+                    "Scholar Chat",
+                    style: TextStyle(color: kPrimaryColor, fontSize: 30),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  const SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      "Registration",
+                      style: TextStyle(fontSize: 30, color: kPrimaryColor),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context, MaterialPageRoute(
-                          builder: (context) {
-                            return const LoginPage();
-                          },
-                        ));
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  CustomTextFormField(
+                      onchanged: (data) {
+                        email = data;
                       },
-                      child: const Text(
-                        "Log in ",
+                      hintText: "Email"),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  CustomTextFormField(
+                      onchanged: (data) {
+                        password = data;
+                      },
+                      hintText: "Password"),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  CustomButtom(
+                    ontap: () async {
+                      if (formkey.currentState!.validate()) {
+                        try {
+                          await FirebaseAuth.instance
+                              .signInWithEmailAndPassword(
+                                  email: email!, password: password!);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomePage(),
+                              ));
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'user-not-found') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('No user found for that email.')));
+                            print('No user found for that email.');
+                          } else if (e.code == 'wrong-password') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Wrong password provided for that user.')));
+                            print('Wrong password provided for that user.');
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Error')));
+                            print(e);
+                          }
+                        }
+                      }
+                    },
+                    text: "Sign up",
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "oleady have an account ",
                         style: TextStyle(
-                            color: kPrimaryColor, fontWeight: FontWeight.bold),
+                            color: kSecondColor, fontWeight: FontWeight.bold),
                       ),
-                    ),
-                  ],
-                )
-              ],
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context, MaterialPageRoute(
+                            builder: (context) {
+                              return const LoginPage();
+                            },
+                          ));
+                        },
+                        child: const Text(
+                          "Log in ",
+                          style: TextStyle(
+                              color: kPrimaryColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
