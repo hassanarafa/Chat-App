@@ -7,7 +7,7 @@ import '../constants.dart';
 import '../widgets/cudtom_textformfield.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/snackBar.dart';
-import 'HomePage.dart';
+import 'ChatPage.dart';
 import 'RegisterPage.dart';
 
 class LoginPage extends StatefulWidget {
@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 30,
                       ),
                       const Text(
-                        "Scholar Chat",
+                        "Chat App",
                         style: TextStyle(color: kPrimaryColor, fontSize: 30),
                       ),
                       const SizedBox(
@@ -95,8 +95,9 @@ class _LoginPageState extends State<LoginPage> {
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute<void>(
-                                    builder: (BuildContext context) =>
-                                        const HomePage()),
+                                    builder: (BuildContext context) => ChatPage(
+                                          email: email,
+                                        )),
                                 (Route<dynamic> route) => false,
                               );
                             } on FirebaseAuthException catch (e) {
@@ -109,7 +110,8 @@ class _LoginPageState extends State<LoginPage> {
                                     'Wrong password provided for that user.');
                                 print('Wrong password provided for that user.');
                               } else {
-                                showSnackBar(context, 'Error');
+                                showSnackBar(
+                                    context, 'Error while entring your data');
                                 print(e);
                               }
                             }

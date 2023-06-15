@@ -7,7 +7,7 @@ import '../constants.dart';
 import '../widgets/cudtom_textformfield.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/snackBar.dart';
-import 'HomePage.dart';
+import 'ChatPage.dart';
 import 'LoginPage.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -48,7 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       height: 30,
                     ),
                     const Text(
-                      "Scholar Chat",
+                      "Chat App",
                       style: TextStyle(color: kPrimaryColor, fontSize: 30),
                     ),
                     const SizedBox(
@@ -94,21 +94,25 @@ class _RegisterPageState extends State<RegisterPage> {
                             Navigator.pushAndRemoveUntil<void>(
                               context,
                               MaterialPageRoute<void>(
-                                  builder: (BuildContext context) =>
-                                      const HomePage()),
+                                  builder: (BuildContext context) => ChatPage(
+                                        email: email,
+                                      )),
                               (Route<dynamic> route) => false,
                             );
                           } on FirebaseAuthException catch (e) {
-                            if (e.code == 'user-not-found') {
-                              showSnackBar(
-                                  context, 'No user found for that email.');
-                              print('No user found for that email.');
-                            } else if (e.code == 'wrong-password') {
+                            if (e.code == 'weak-password') {
                               showSnackBar(context,
-                                  'Wrong password provided for that user.');
-                              print('Wrong password provided for that user.');
+                                  'The password provided is too weak.');
+                              print('The password provided is too weak.');
+                            } else if (e.code ==
+                                'email-already-in-usewrong-password') {
+                              showSnackBar(context,
+                                  'The account already exists for that email.');
+                              print(
+                                  'The account already exists for that email.');
                             } else {
-                              showSnackBar(context, 'Error');
+                              showSnackBar(
+                                  context, 'Error while adding new account');
                               print(e);
                             }
                           }
